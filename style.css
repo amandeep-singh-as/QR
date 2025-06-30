@@ -158,3 +158,17 @@ button:hover {
     gap: 0.25rem;
     margin-bottom: 0.5rem;
 }
+
+.commit-id {
+    position: fixed;
+    bottom: 12px;
+    right: 18px;
+    color: #b0b0b0;
+    font-size: 0.95rem;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: none;
+    z-index: 1000;
+    letter-spacing: 0.5px;
+}

@@ -91,8 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Social share handlers
+    /*
     shareFacebook.addEventListener('click', () => shareQRCode('facebook'));
     shareWhatsapp.addEventListener('click', () => shareQRCode('whatsapp'));
     shareX.addEventListener('click', () => shareQRCode('x'));
     shareInstagram.addEventListener('click', () => shareQRCode('instagram'));
+    */
 });
