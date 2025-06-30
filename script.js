@@ -48,28 +48,51 @@ document.addEventListener('DOMContentLoaded', () => {
         shareSection.classList.remove('hidden');
     }
 
+    // Helper to get QR code as blob
+    async function getQRCodeBlob() {
+        if (!qr) return null;
+        // qr.getRawData() returns a Promise<Blob>
+        return await qr.getRawData('png');
+    }
+
+    // Updated Social share handlers
+    async function shareQRCode(platform) {
+        if (!qr) return;
+        const blob = await getQRCodeBlob();
+        if (!blob) return;
+        const file = new File([blob], 'qrcode.png', { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({
+                    files: [file],
+                    title: 'QR Code',
+                    text: 'Scan this QR code!'
+                });
+                return;
+            } catch (err) {
+                // fallback below
+            }
+        }
+        // Fallback: download the image
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'qrcode.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('QR code image downloaded. You can now share it manually.');
+    }
+
     function downloadQRCode() {
         if (!qr) return;
         qr.download({ name: 'qrcode', extension: 'png' });
     }
 
     // Social share handlers
-    shareFacebook.addEventListener('click', () => {
-        if (!currentUrl) return;
-        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
-        window.open(shareUrl, '_blank');
-    });
-    shareWhatsapp.addEventListener('click', () => {
-        if (!currentUrl) return;
-        const shareUrl = `https://wa.me/?text=${encodeURIComponent(currentUrl)}`;
-        window.open(shareUrl, '_blank');
-    });
-    shareX.addEventListener('click', () => {
-        if (!currentUrl) return;
-        const shareUrl = `https://x.com/intent/tweet?url=${encodeURIComponent(currentUrl)}`;
-        window.open(shareUrl, '_blank');
-    });
-    shareInstagram.addEventListener('click', () => {
-        alert('Instagram does not support direct URL sharing via web. Please copy and share manually.');
-    });
+    shareFacebook.addEventListener('click', () => shareQRCode('facebook'));
+    shareWhatsapp.addEventListener('click', () => shareQRCode('whatsapp'));
+    shareX.addEventListener('click', () => shareQRCode('x'));
+    shareInstagram.addEventListener('click', () => shareQRCode('instagram'));
 });
